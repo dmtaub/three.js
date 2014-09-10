@@ -224,6 +224,8 @@ THREE.OBJLoader.prototype = {
 
 		//
 
+		text = text.replace( /\\\r?\n/g, '' ); // handles line continuations
+
 		var lines = text.split( '\n' );
 
 		for ( var i = 0; i < lines.length; i ++ ) {
