@@ -13045,18 +13045,14 @@ THREE.BufferGeometryLoader.prototype = {
 
 		var attributes = json.attributes;
 
-		var attributesKeys = [];
-
 		for ( var key in attributes ) {
 
 			var attribute = attributes[ key ];
 			var typedArray = new self[ attribute.type ]( attribute.array );
 
-			geometry.attributes[ key ] = new THREE.BufferAttribute( typedArray, attribute.itemSize );
-			attributesKeys.push( key );
-		}
+			geometry.addAttribute( key, new THREE.BufferAttribute( typedArray, attribute.itemSize ) );
 
-		geometry.attributesKeys = attributesKeys;
+		}
 
 		var offsets = json.offsets;
 
@@ -21868,6 +21864,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		if ( object instanceof THREE.Mesh ) {
 
+			var mode = material.wireframe === true ? _gl.LINES : _gl.TRIANGLES;
+
 			var index = geometry.attributes.index;
 
 			if ( index ) {
@@ -21899,7 +21897,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 					}
 
-					_gl.drawElements( _gl.TRIANGLES, index.array.length, type, 0 );
+					_gl.drawElements( mode, index.array.length, type, 0 );
 
 					_this.info.render.calls ++;
 					_this.info.render.vertices += index.array.length; // not really true, here vertices can be shared
@@ -21926,7 +21924,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 						// render indexed triangles
 
-						_gl.drawElements( _gl.TRIANGLES, offsets[ i ].count, type, offsets[ i ].start * size );
+						_gl.drawElements( mode, offsets[ i ].count, type, offsets[ i ].start * size );
 
 						_this.info.render.calls ++;
 						_this.info.render.vertices += offsets[ i ].count; // not really true, here vertices can be shared
@@ -21950,7 +21948,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 				// render non-indexed triangles
 
-				_gl.drawArrays( _gl.TRIANGLES, 0, position.array.length / 3 );
+				_gl.drawArrays( mode, 0, position.array.length / 3 );
 
 				_this.info.render.calls ++;
 				_this.info.render.vertices += position.array.length / 3;
