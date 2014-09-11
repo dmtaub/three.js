@@ -8,6 +8,10 @@ THREE.OBJLoader = function ( manager ) {
 
 };
 
+THREE.OBJLoader.ContainerClass = THREE.Object3D;
+THREE.OBJLoader.ContainedClass = THREE.Mesh;
+THREE.OBJLoader.MaterialClass = THREE.MeshLambertMaterial;
+
 THREE.OBJLoader.prototype = {
 
 	constructor: THREE.OBJLoader,
@@ -351,7 +355,7 @@ THREE.OBJLoader.prototype = {
 
 		}
 
-		var container = new THREE.Object3D();
+		var container = new THREE.OBJLoader.ContainerClass();
 
 		for ( var i = 0, l = objects.length; i < l; i ++ ) {
 
@@ -362,10 +366,10 @@ THREE.OBJLoader.prototype = {
 			geometry.addAttribute( 'normal', new THREE.BufferAttribute( new Float32Array( object.geometry.normals ), 3 ) );
 			geometry.addAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( object.geometry.uvs ), 2 ) );
 
-			var material = new THREE.MeshLambertMaterial();
+			var material = new THREE.OBJLoader.MaterialClass();
 			material.name = object.material.name;
 
-			var mesh = new THREE.Mesh( geometry, material );
+			var mesh = new THREE.OBJLoader.ContainedClass( geometry, material );
 			mesh.name = object.name;
 
 			container.add( mesh );
