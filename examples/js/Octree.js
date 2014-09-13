@@ -218,7 +218,7 @@
 				
 				if ( useVertices === true ) {
 					
-					geometry = object.geometry;
+					geometry = object.geom || object.geometry;
 					vertices = geometry.vertices;
 					
 					for ( i = 0, l = vertices.length; i < l; i++ ) {
@@ -229,7 +229,7 @@
 					
 				} else if ( useFaces === true ) {
 					
-					geometry = object.geometry;
+					geometry = object.geom || object.geometry;
 					faces = geometry.faces;
 					
 					for ( i = 0, l = faces.length; i < l; i++ ) {
@@ -660,17 +660,17 @@
 				this.position.copy( this.vertices ).applyMatrix4( this.object.matrixWorld );
 				
 			} else {
-				
-				if ( this.object.geometry ) {
+				var geometry = this.object.geom || this.object.geometry;
+				if ( geometry ) {
 					
-					if ( this.object.geometry.boundingSphere === null ) {
+					if ( geometry.boundingSphere === null ) {
 						
-						this.object.geometry.computeBoundingSphere();
+						geometry.computeBoundingSphere();
 						
 					}
 					
-					this.radius = this.object.geometry.boundingSphere.radius;
-					this.position.copy( this.object.geometry.boundingSphere.center ).applyMatrix4( this.object.matrixWorld );
+					this.radius = geometry.boundingSphere.radius;
+					this.position.copy( geometry.boundingSphere.center ).applyMatrix4( this.object.matrixWorld );
 					
 				} else {
 					
@@ -689,7 +689,7 @@
 
 			if ( face.centroid === undefined ) face.centroid = new THREE.Vector3();
 			
-			var geometry = object.geometry || object,
+			var geometry = object.geom || object.geometry || object,
 				vertices = geometry.vertices,
 				centroid = face.centroid,
 				va = vertices[ face.a ], vb = vertices[ face.b ], vc = vertices[ face.c ],
@@ -2066,11 +2066,11 @@
 			// temporarily replace object geometry's faces with octree object faces
 			
 			facesSearch = octreeObject.faces;
-			facesAll = object.geometry.faces;
+			facesAll = (object.geom || object.geometry).faces;
 			
 			if ( facesSearch.length > 0 ) {
 				
-				object.geometry.faces = facesSearch;
+				(object.geom || object.geometry).faces = facesSearch;
 				
 			}
 			
@@ -2082,7 +2082,7 @@
 			
 			if ( facesSearch.length > 0 ) {
 				
-				object.geometry.faces = facesAll;
+				(object.geom || object.geometry).faces = facesAll;
 				
 			}
 			
