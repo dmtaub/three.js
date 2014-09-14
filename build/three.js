@@ -7822,6 +7822,12 @@ THREE.Object3D.prototype = {
 
 				data.material = parseMaterial( object.material );
 
+			} else {
+				// providing for custom types that save refs to material/geom
+				if ( object.material && data.material)
+					data.material= parseMaterial( object.material );
+				if ( object.geometry && data.geometry)
+					data.geometry = parseGeometry( object.geometry );
 			}
 
 			data.matrix = object.matrix.toArray();
@@ -13736,6 +13742,14 @@ THREE.Material.prototype = {
 			output.fragmentShader = this.fragmentShader;
 
 		} else if ( this instanceof THREE.SpriteMaterial ) {
+
+			output.color = this.color.getHex();
+
+		} else if ( this instanceof THREE.LineBasicMaterial ) {
+
+			output.color = this.color.getHex();
+
+		} else if ( this instanceof THREE.LineDashedMaterial ) {
 
 			output.color = this.color.getHex();
 

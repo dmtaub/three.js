@@ -624,6 +624,12 @@ THREE.Object3D.prototype = {
 
 				data.material = parseMaterial( object.material );
 
+			} else {
+				// providing for custom types that save refs to material/geom
+				if ( object.material && data.material)
+					data.material= parseMaterial( object.material );
+				if ( object.geometry && data.geometry)
+					data.geometry = parseGeometry( object.geometry );
 			}
 
 			data.matrix = object.matrix.toArray();
