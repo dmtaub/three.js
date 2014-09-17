@@ -2613,7 +2613,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		} else if ( object instanceof THREE.Line ) {
 
-			var mode = ( object.type === THREE.LineStrip ) ? _gl.LINE_STRIP : _gl.LINES;
+			var mode = ( object.subtype === THREE.LineStrip ) ? _gl.LINE_STRIP : _gl.LINES;
 
 			setLineWidth( material.linewidth );
 
@@ -2914,7 +2914,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		} else if ( object instanceof THREE.Line ) {
 
-			var mode = ( object.type === THREE.LineStrip ) ? _gl.LINE_STRIP : _gl.LINES;
+			var mode = ( object.subtype === THREE.LineStrip ) ? _gl.LINE_STRIP : _gl.LINES;
 
 			setLineWidth( material.linewidth );
 
