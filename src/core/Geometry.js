@@ -9,7 +9,8 @@
 
 THREE.Geometry = function () {
 
-	this.id = THREE.GeometryIdCount ++;
+	Object.defineProperty( this, 'id', { value: THREE.GeometryIdCount ++ } );
+
 	this.uuid = THREE.Math.generateUUID();
 
 	this.name = '';
@@ -48,7 +49,6 @@ THREE.Geometry = function () {
 	this.colorsNeedUpdate = false;
 	this.lineDistancesNeedUpdate = false;
 
-	this.buffersNeedUpdate = false;
 	this.groupsNeedUpdate = false;
 
 };
@@ -161,6 +161,8 @@ THREE.Geometry.prototype = {
 			}
 
 		}
+		
+		this.computeFaceNormals();
 
 		if ( geometry.boundingBox !== null ) {
 

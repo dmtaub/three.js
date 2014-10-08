@@ -7245,7 +7245,8 @@ THREE.EventDispatcher.prototype = {
 
 THREE.Object3D = function () {
 
-	this.id = THREE.Object3DIdCount ++;
+	Object.defineProperty( this, 'id', { value: THREE.Object3DIdCount ++ } );
+
 	this.uuid = THREE.Math.generateUUID();
 
 	this.name = '';
@@ -7960,10 +7961,11 @@ THREE.Object3DIdCount = 0;
 
 THREE.Projector = function () {
 
+	console.warn( 'THREE.Projector has been moved to /examples/renderers/Projector.js.' );
+
 	this.projectVector = function ( vector, camera ) {
 
 		console.warn( 'THREE.Projector: .projectVector() is now vector.project().' );
-
 		vector.project( camera );
 
 	};
@@ -7971,24 +7973,13 @@ THREE.Projector = function () {
 	this.unprojectVector = function ( vector, camera ) {
 
 		console.warn( 'THREE.Projector: .unprojectVector() is now vector.unproject().' );
-
 		vector.unproject( camera );
 
 	};
 
 	this.pickingRay = function ( vector, camera ) {
 
-		// set two vectors with opposing z values
-		vector.z = - 1.0;
-		var end = new THREE.Vector3( vector.x, vector.y, 1.0 );
-
-		this.unprojectVector( vector, camera );
-		this.unprojectVector( end, camera );
-
-		// find direction from vector to end
-		end.sub( vector ).normalize();
-
-		return new THREE.Raycaster( vector, end );
+		console.error( 'THREE.Projector: .pickingRay() has been removed.' );
 
 	};
 
@@ -8258,7 +8249,8 @@ THREE.Float64Attribute = function ( data, itemSize ) {
 
 THREE.BufferGeometry = function () {
 
-	this.id = THREE.GeometryIdCount ++;
+	Object.defineProperty( this, 'id', { value: THREE.GeometryIdCount ++ } );
+
 	this.uuid = THREE.Math.generateUUID();
 
 	this.name = '';
@@ -9223,7 +9215,8 @@ THREE.EventDispatcher.prototype.apply( THREE.BufferGeometry.prototype );
 
 THREE.Geometry = function () {
 
-	this.id = THREE.GeometryIdCount ++;
+	Object.defineProperty( this, 'id', { value: THREE.GeometryIdCount ++ } );
+
 	this.uuid = THREE.Math.generateUUID();
 
 	this.name = '';
@@ -9262,7 +9255,6 @@ THREE.Geometry = function () {
 	this.colorsNeedUpdate = false;
 	this.lineDistancesNeedUpdate = false;
 
-	this.buffersNeedUpdate = false;
 	this.groupsNeedUpdate = false;
 
 };
@@ -9375,6 +9367,8 @@ THREE.Geometry.prototype = {
 			}
 
 		}
+		
+		this.computeFaceNormals();
 
 		if ( geometry.boundingBox !== null ) {
 
@@ -12978,7 +12972,8 @@ THREE.CompressedTextureLoader.prototype = {
 
 THREE.Material = function () {
 
-	this.id = THREE.MaterialIdCount ++;
+	Object.defineProperty( this, 'id', { value: THREE.MaterialIdCount ++ } );
+
 	this.uuid = THREE.Math.generateUUID();
 
 	this.name = '';
@@ -14189,7 +14184,8 @@ THREE.SpriteMaterial.prototype.clone = function () {
 
 THREE.Texture = function ( image, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy ) {
 
-	this.id = THREE.TextureIdCount ++;
+	Object.defineProperty( this, 'id', { value: THREE.TextureIdCount ++ } );
+
 	this.uuid = THREE.Math.generateUUID();
 
 	this.name = '';
@@ -18281,6 +18277,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		if ( geometry.__webglLineBuffer !== undefined ) _gl.deleteBuffer( geometry.__webglLineBuffer );
 
 		if ( geometry.__webglLineDistanceBuffer !== undefined ) _gl.deleteBuffer( geometry.__webglLineDistanceBuffer );
+		
 		// custom attributes
 
 		if ( geometry.__webglCustomAttributesList !== undefined ) {
@@ -21271,11 +21268,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			} else if ( object instanceof THREE.Mesh ) {
 
-				initGeometryGroups(scene, object, geometry);
+				initGeometryGroups( scene, object, geometry );
 
 			} else if ( object instanceof THREE.Line ) {
 
-				if ( ! geometry.__webglVertexBuffer ) {
+				if ( geometry.__webglVertexBuffer === undefined ) {
 
 					createLineBuffers( geometry );
 					initLineBuffers( geometry, object );
@@ -21288,7 +21285,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			} else if ( object instanceof THREE.PointCloud ) {
 
-				if ( ! geometry.__webglVertexBuffer ) {
+				if ( geometry.__webglVertexBuffer === undefined ) {
 
 					createParticleBuffers( geometry );
 					initParticleBuffers( geometry, object );
@@ -21304,6 +21301,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		if ( object.__webglActive === undefined) {
 
+			object.__webglActive = true;
+
 			if ( object instanceof THREE.Mesh ) {
 
 				if ( geometry instanceof THREE.BufferGeometry ) {
@@ -21312,16 +21311,15 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 				} else if ( geometry instanceof THREE.Geometry ) {
 
-					for ( var i = 0,l = geometry.geometryGroupsList.length; i<l;i++ ) {
+					for ( var i = 0,l = geometry.geometryGroupsList.length; i < l; i ++ ) {
 
-						var geometryGroup = geometry.geometryGroupsList[ i ];
-						addBuffer( _webglObjects, geometryGroup, object );
+						addBuffer( _webglObjects, geometry.geometryGroupsList[ i ], object );
 
 					}
+
 				}
 
-			} else if ( object instanceof THREE.Line ||
-						object instanceof THREE.PointCloud ) {
+			} else if ( object instanceof THREE.Line || object instanceof THREE.PointCloud ) {
 
 				addBuffer( _webglObjects, geometry, object );
 
@@ -21331,20 +21329,18 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			}
 
-			object.__webglActive = true;
-
 		}
 
 	};
 
 	function initGeometryGroups( scene, object, geometry ) {
 
-		var g, geometryGroup, material,addBuffers = false;
-		material = object.material;
+		var g, geometryGroup, material = object.material, addBuffers = false;
 
-		if ( geometry.geometryGroups === undefined || geometry.groupsNeedUpdate ) {
+		if ( geometry.geometryGroups === undefined || geometry.groupsNeedUpdate === true ) {
 
-			delete _webglObjects[object.id];
+			delete _webglObjects[ object.id ];
+
 			geometry.makeGroups( material instanceof THREE.MeshFaceMaterial, _glExtensionElementIndexUint ? 4294967296 : 65535  );
 			geometry.groupsNeedUpdate = false;
 
@@ -21358,7 +21354,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			// initialise VBO on the first access
 
-			if ( ! geometryGroup.__webglVertexBuffer ) {
+			if ( geometryGroup.__webglVertexBuffer === undefined ) {
 
 				createMeshBuffers( geometryGroup );
 				initMeshBuffers( geometryGroup, object );
@@ -21380,7 +21376,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 			if ( addBuffers || object.__webglActive === undefined ) {
+
 				addBuffer( _webglObjects, geometryGroup, object );
+
 			}
 
 		}
@@ -21433,9 +21431,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		} else if ( object instanceof THREE.Mesh ) {
 
 			// check all geometry groups
-			if ( geometry.buffersNeedUpdate || geometry.groupsNeedUpdate ) {
 
-				initGeometryGroups(scene, object,geometry);
+			if ( geometry.groupsNeedUpdate === true ) {
+
+				initGeometryGroups( scene, object, geometry );
 
 			}
 
@@ -21445,7 +21444,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 				material = getBufferMaterial( object, geometryGroup );
 
-				if ( geometry.buffersNeedUpdate || geometry.groupsNeedUpdate) {
+				if ( geometry.groupsNeedUpdate === true ) {
 
 					initMeshBuffers( geometryGroup, object );
 
@@ -21470,8 +21469,6 @@ THREE.WebGLRenderer = function ( parameters ) {
 			geometry.normalsNeedUpdate = false;
 			geometry.colorsNeedUpdate = false;
 			geometry.tangentsNeedUpdate = false;
-
-			geometry.buffersNeedUpdate = false;
 
 			material.attributes && clearCustomAttributes( material );
 
@@ -23389,18 +23386,19 @@ THREE.WebGLRenderer = function ( parameters ) {
 				_gl.pixelStorei( _gl.UNPACK_FLIP_Y_WEBGL, texture.flipY );
 
 				var isCompressed = texture instanceof THREE.CompressedTexture;
+				var isDataTexture = texture.image[ 0 ] instanceof THREE.DataTexture;
 
 				var cubeImage = [];
 
 				for ( var i = 0; i < 6; i ++ ) {
 
-					if ( _this.autoScaleCubemaps && ! isCompressed ) {
+					if ( _this.autoScaleCubemaps && ! isCompressed && ! isDataTexture ) {
 
 						cubeImage[ i ] = clampToMaxSize( texture.image[ i ], _maxCubemapSize );
 
 					} else {
 
-						cubeImage[ i ] = texture.image[ i ];
+						cubeImage[ i ] = isDataTexture ? texture.image[ i ].image : texture.image[ i ];
 
 					}
 
@@ -23417,7 +23415,15 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 					if ( ! isCompressed ) {
 
-						_gl.texImage2D( _gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, glFormat, glType, cubeImage[ i ] );
+						if ( isDataTexture ) {
+
+							_gl.texImage2D( _gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, cubeImage[ i ].width, cubeImage[ i ].height, 0, glFormat, glType, cubeImage[ i ].data );
+
+						} else {
+
+							_gl.texImage2D( _gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, glFormat, glType, cubeImage[ i ] );
+
+						}
 
 					} else {
 
