@@ -1062,12 +1062,14 @@ THREE.Quaternion.prototype = {
 
 	},
 
-	fromArray: function ( array ) {
+	fromArray: function ( array, offset ) {
 
-		this._x = array[ 0 ];
-		this._y = array[ 1 ];
-		this._z = array[ 2 ];
-		this._w = array[ 3 ];
+		if ( offset === undefined ) offset = 0;
+
+		this._x = array[ offset ];
+		this._y = array[ offset + 1 ];
+		this._z = array[ offset + 2 ];
+		this._w = array[ offset + 3 ];
 
 		this.onChangeCallback();
 
@@ -1484,10 +1486,12 @@ THREE.Vector2.prototype = {
 
 	},
 
-	fromArray: function ( array ) {
+	fromArray: function ( array, offset ) {
 
-		this.x = array[ 0 ];
-		this.y = array[ 1 ];
+		if ( offset === undefined ) offset = 0;
+
+		this.x = array[ offset ];
+		this.y = array[ offset + 1 ];
 
 		return this;
 
@@ -2295,11 +2299,13 @@ THREE.Vector3.prototype = {
 
 	},
 
-	fromArray: function ( array ) {
+	fromArray: function ( array, offset ) {
 
-		this.x = array[ 0 ];
-		this.y = array[ 1 ];
-		this.z = array[ 2 ];
+		if ( offset === undefined ) offset = 0;
+
+		this.x = array[ offset ];
+		this.y = array[ offset + 1 ];
+		this.z = array[ offset + 2 ];
 
 		return this;
 
@@ -2944,12 +2950,14 @@ THREE.Vector4.prototype = {
 
 	},
 
-	fromArray: function ( array ) {
+	fromArray: function ( array, offset ) {
 
-		this.x = array[ 0 ];
-		this.y = array[ 1 ];
-		this.z = array[ 2 ];
-		this.w = array[ 3 ];
+		if ( offset === undefined ) offset = 0;
+
+		this.x = array[ offset ];
+		this.y = array[ offset + 1 ];
+		this.z = array[ offset + 2 ];
+		this.w = array[ offset + 3 ];
 
 		return this;
 
