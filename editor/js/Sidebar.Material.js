@@ -1,3 +1,7 @@
+/**
+ * @author mrdoob / http://mrdoob.com/
+ */
+
 Sidebar.Material = function ( editor ) {
 
 	var signals = editor.signals;
@@ -334,6 +338,7 @@ Sidebar.Material = function ( editor ) {
 	materialBlendingRow.add( materialBlending );
 
 	container.add( materialBlendingRow );
+
 	// opacity
 
 	var materialOpacityRow = new UI.Panel();
@@ -565,17 +570,9 @@ Sidebar.Material = function ( editor ) {
 
 				var envMapEnabled = materialEnvMapEnabled.getValue() === true;
 
-				if ( objectHasUvs )  {
-
-					material.envMap = envMapEnabled ? materialEnvMap.getValue() : null;
-					material.reflectivity = materialReflectivity.getValue();
-					material.needsUpdate = true;
-
-				} else {
-
-					if ( envMapEnabled ) textureWarning = true;
-
-				}
+				material.envMap = envMapEnabled ? materialEnvMap.getValue() : null;
+				material.reflectivity = materialReflectivity.getValue();
+				material.needsUpdate = true;
 
 			}
 
