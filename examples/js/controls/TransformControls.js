@@ -621,7 +621,7 @@
 		domElement.addEventListener( "touchmove", onPointerMove, false );
 
 		domElement.addEventListener( "mouseup", onPointerUp, false );
-		domElement.addEventListener( "mouseout", onPointerUp, false );
+		domElement.addEventListener( "mouseout", onPointerUpCheck(domElement), false );
 		domElement.addEventListener( "touchend", onPointerUp, false );
 		domElement.addEventListener( "touchcancel", onPointerUp, false );
 		domElement.addEventListener( "touchleave", onPointerUp, false );
@@ -968,6 +968,15 @@
 			_dragging = false;
 			onPointerHover( event );
 
+		}
+
+		//hack for now...
+		function onPointerUpCheck( domElement ) {
+
+			return (function( event ) {
+				if ( event.toElement.className == "measurement" ) return;
+				onPointerUp( event );
+			});
 		}
 
 		function intersectObjects( pointer, objects ) {
