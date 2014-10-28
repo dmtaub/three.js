@@ -974,7 +974,7 @@
 		function onPointerUpCheck( domElement ) {
 
 			return (function( event ) {
-				if ( event.toElement.className == "measurement" ) return;
+				if ( event.toElement && ( event.toElement.className == "measurement" ) ) return;
 				onPointerUp( event );
 			});
 		}
